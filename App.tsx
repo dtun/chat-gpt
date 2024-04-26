@@ -4,38 +4,44 @@ import {
   DrawerItem,
   // DrawerItemList,
   createDrawerNavigator,
-} from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
-import { useWindowDimensions, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
+} from "@react-navigation/drawer";
+import { NavigationContainer } from "@react-navigation/native";
+import { useWindowDimensions, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import ChatPage from './app/screens/ChatPage';
-import SettingsPage from './app/screens/SettingsPage';
-import ImagesPage from './app/screens/ImagesPage';
-import WhisperPage from './app/screens/WhisperPage';
+import ChatPage from "./app/screens/ChatPage";
+import SettingsPage from "./app/screens/SettingsPage";
+import ImagesPage from "./app/screens/ImagesPage";
+import WhisperPage from "./app/screens/WhisperPage";
+import { RootSiblingParent } from "react-native-root-siblings";
+import { STORAGE_API_KEY } from "./app/constants/constants";
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const openAccount = () => {
-    WebBrowser.openBrowserAsync('https://platform.openai.com/account/usage');
+    WebBrowser.openBrowserAsync("https://platform.openai.com/account/usage");
   };
   const openHelp = () => {
     WebBrowser.openBrowserAsync(
-      'https://help.openai.com/en/collections/3742473-chatgpt'
+      "https://help.openai.com/en/collections/3742473-chatgpt"
     );
   };
-  const signOut = () => {};
+  const signOut = async () => {
+    await AsyncStorage.removeItem(STORAGE_API_KEY);
+    props.navigation.navigate("Settings");
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#18191a', padding: 6 }}>
+    <View style={{ flex: 1, backgroundColor: "#18191a", padding: 6 }}>
       <DrawerContentScrollView {...props}>
         <DrawerItem
           icon={() => <Ionicons name="add-outline" size={24} color="white" />}
           label="New chat"
-          labelStyle={{ color: '#fff' }}
-          style={{ borderRadius: 6, borderWidth: 1, borderColor: '#ffffff33' }}
+          labelStyle={{ color: "#fff" }}
+          style={{ borderRadius: 6, borderWidth: 1, borderColor: "#ffffff33" }}
           onPress={() => {
-            props.navigation.navigate('Chat');
+            props.navigation.navigate("Chat");
           }}
         />
         <DrawerItem
@@ -43,29 +49,29 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             <Ionicons name="camera-outline" size={24} color="white" />
           )}
           label="Generate image"
-          labelStyle={{ color: '#fff' }}
+          labelStyle={{ color: "#fff" }}
           onPress={() => {
-            props.navigation.navigate('Images');
+            props.navigation.navigate("Images");
           }}
         />
         <DrawerItem
           icon={() => <Ionicons name="mic-outline" size={24} color="white" />}
           label="Speech to text"
-          labelStyle={{ color: '#fff' }}
+          labelStyle={{ color: "#fff" }}
           onPress={() => {
-            props.navigation.navigate('Whisper');
+            props.navigation.navigate("Whisper");
           }}
         />
       </DrawerContentScrollView>
       <View
-        style={{ height: 240, borderTopColor: '#ffffff33', borderTopWidth: 1 }}
+        style={{ height: 240, borderTopColor: "#ffffff33", borderTopWidth: 1 }}
       >
         <DrawerItem
           icon={() => (
             <Ionicons name="person-outline" size={24} color="white" />
           )}
           label="My account"
-          labelStyle={{ color: '#fff' }}
+          labelStyle={{ color: "#fff" }}
           onPress={() => {
             openAccount();
           }}
@@ -73,7 +79,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         <DrawerItem
           icon={() => <Ionicons name="share-outline" size={24} color="white" />}
           label="Get help"
-          labelStyle={{ color: '#fff' }}
+          labelStyle={{ color: "#fff" }}
           onPress={() => {
             openHelp();
           }}
@@ -83,9 +89,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             <Ionicons name="settings-outline" size={24} color="white" />
           )}
           label="Settings"
-          labelStyle={{ color: '#fff' }}
+          labelStyle={{ color: "#fff" }}
           onPress={() => {
-            props.navigation.navigate('Settings');
+            props.navigation.navigate("Settings");
           }}
         />
         <DrawerItem
@@ -93,7 +99,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             <Ionicons name="log-out-outline" size={24} color="white" />
           )}
           label="Log out"
-          labelStyle={{ color: '#fff' }}
+          labelStyle={{ color: "#fff" }}
           onPress={() => {
             signOut();
           }}
@@ -121,8 +127,8 @@ function DrawerNavigation() {
       drawerContent={CustomDrawerContent}
       initialRouteName="Settings"
       screenOptions={{
-        drawerType: isLargeScreen ? 'permanent' : 'front',
-        headerTintColor: '#18191a',
+        drawerType: isLargeScreen ? "permanent" : "front",
+        headerTintColor: "#18191a",
       }}
     >
       <Drawer.Screen component={ChatPage} name="Chat" />
@@ -135,8 +141,10 @@ function DrawerNavigation() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <DrawerNavigation />
-    </NavigationContainer>
+    <RootSiblingParent>
+      <NavigationContainer>
+        <DrawerNavigation />
+      </NavigationContainer>
+    </RootSiblingParent>
   );
 }
