@@ -1,14 +1,22 @@
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import Toast from "react-native-root-toast";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 import { STORAGE_API_KEY } from "../constants/constants";
-import { TextInput } from "react-native-gesture-handler";
 
 const SettingsPage = () => {
   const [apiKey, setApiKey] = useState("");
   const [hasKey, setHasKey] = useState(false);
+  const navigation = useNavigation();
 
   useLayoutEffect(() => {
     loadApiKey();
@@ -20,6 +28,9 @@ const SettingsPage = () => {
       if (value) {
         setApiKey(value);
         setHasKey(true);
+      } else {
+        setApiKey("");
+        setHasKey(false);
       }
     } catch (e) {
       Alert.alert("Error", "Unable to load api key");
@@ -45,6 +56,14 @@ const SettingsPage = () => {
       Alert.alert("Error", "Unable to remove api key");
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      loadApiKey();
+    });
+
+    return unsubscribe;
+  }, [loadApiKey]);
 
   return (
     <View style={styles.container}>
