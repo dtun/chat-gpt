@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Button,
   Text,
   FlatList,
   StyleSheet,
