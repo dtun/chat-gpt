@@ -1,5 +1,10 @@
+import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
+import { ClientOptions, OpenAI } from "openai";
+
+import { STORAGE_API_KEY } from "../constants/constants";
 
 export enum Creator {
   Me = 0,
@@ -43,11 +48,33 @@ export function useApi() {
   }, []);
 
   const getCompletion = async (prompt: string) => {
+    const apiKey = await AsyncStorage.getItem(STORAGE_API_KEY);
+    if (!apiKey) {
+      Alert.alert("Error", "No API key found");
+      return;
+    }
+    // Add our own message
     const newMessage = {
       text: prompt,
       from: Creator.Me,
     };
     messageSubject.next([...messageSubject.value, newMessage]);
+    // Setup OpenAI
+    const config: ClientOptions = { apiKey };
+    const openai = new OpenAI(config);
+    // Get completion
+    const completion = await openai.completions.create({
+      model: "gpt-3.5-turbo-instruct",
+      prompt,
+    });
+    const [data] = completion.choices;
+    const trimmedText = data.text.trim();
+    // Add bot message
+    const botMessage = {
+      text: trimmedText,
+      from: Creator.Bot,
+    };
+    messageSubject.next([...messageSubject.value, botMessage]);
   };
 
   return { messages, getCompletion };

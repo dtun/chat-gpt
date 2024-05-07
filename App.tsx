@@ -10,12 +10,14 @@ import { useWindowDimensions, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RootSiblingParent } from "react-native-root-siblings";
+import "react-native-url-polyfill";
+import "react-native-gesture-handler";
 
 import ChatPage from "./app/screens/ChatPage";
 import SettingsPage from "./app/screens/SettingsPage";
 import ImagesPage from "./app/screens/ImagesPage";
 import WhisperPage from "./app/screens/WhisperPage";
-import { RootSiblingParent } from "react-native-root-siblings";
 import { STORAGE_API_KEY } from "./app/constants/constants";
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
