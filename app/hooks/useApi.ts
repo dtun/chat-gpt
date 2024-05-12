@@ -77,5 +77,23 @@ export function useApi() {
     messageSubject.next([...messageSubject.value, botMessage]);
   };
 
-  return { messages, getCompletion };
+  const generateImage = async (prompt: string) => {
+    const apiKey = await AsyncStorage.getItem(STORAGE_API_KEY);
+    if (!apiKey) {
+      Alert.alert("Error", "No API key found");
+      return;
+    }
+    // Setup OpenAI
+    const config: ClientOptions = { apiKey };
+    const openai = new OpenAI(config);
+    const completion = await openai.completions.create({
+      model: "image-alpha-001",
+      prompt,
+      n: 1,
+    });
+    const [image] = completion.choices;
+    return image.text.trim();
+  };
+
+  return { messages, getCompletion, generateImage };
 }
