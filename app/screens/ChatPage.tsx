@@ -45,7 +45,7 @@ const ChatPage = () => {
           source={isUserMessage ? usrImage : botImage}
           style={styles.img}
         />
-        <Text>{item.text}</Text>
+        <Text style={styles.messageText}>{item.text}</Text>
       </View>
     );
   };
@@ -130,5 +130,10 @@ const styles = StyleSheet.create({
   },
   botMessageContainer: {
     backgroundColor: "#f5f5f6",
+  },
+  messageText: {
+    fontSize: 16,
+    flex: 1,
+    flexWrap: "wrap",
   },
 });
