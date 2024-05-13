@@ -95,5 +95,32 @@ export function useApi() {
     return image.text.trim();
   };
 
-  return { messages, getCompletion, generateImage };
+  const speechToText = async (audioUri: string) => {
+    const apiKey = await AsyncStorage.getItem(STORAGE_API_KEY);
+    if (!apiKey) {
+      Alert.alert("Error", "No API key found");
+      return;
+    }
+    // Setup OpenAI
+    const formData = new FormData();
+    const imageData = {
+      uri: audioUri,
+      type: "audio/mp4",
+      name: "audio.m4a",
+    };
+
+    formData.append("file", imageData as unknown as Blob);
+    formData.append("model", "whisper-1");
+
+    return fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        ["Content-Type"]: "multipart/form-data",
+      },
+      body: formData,
+    }).then((res) => res.json());
+  };
+
+  return { messages, getCompletion, generateImage, speechToText };
 }
